@@ -1,0 +1,11 @@
+language: ruby
+rvm:
+  - 2.2.3
+  - 2.1.7
+
+before_install:
+  - gem update bundler
+  
+script:
+  - bundle exec rake spec
+  - bundle exec rubocop
