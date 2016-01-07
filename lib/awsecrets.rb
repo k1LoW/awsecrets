@@ -4,7 +4,7 @@ require 'aws_config'
 require 'yaml'
 
 module Awsecrets
-  def self.load(profile = nil, secrets_path = 'secrets.yml')
+  def self.load(profile: nil, secrets_path: 'secrets.yml')
     profile = ENV['AWS_PROFILE'] if profile.nil?
     if profile
       # SharedCredentials
