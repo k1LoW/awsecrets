@@ -1,4 +1,4 @@
-# awsecrets
+# awsecrets [![Gem](https://img.shields.io/gem/v/awsecrets.svg)](https://rubygems.org/gems/awsecrets)
 
 AWS credentials loader
 
