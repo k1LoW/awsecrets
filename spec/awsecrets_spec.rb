@@ -17,22 +17,22 @@ describe Awsecrets do
 
   it '--profile option' do
     Awsecrets.load(profile: 'dev')
-    expect(Aws.config[:region]).to eq('ap-northeast-1')
-    expect(Aws.config[:credentials].credentials.access_key_id).to eq('DEV_ACCESS_KEY_ID')
-    expect(Aws.config[:credentials].credentials.secret_access_key).to eq('DEV_SECRET_ACCESS_KEY')
+    expect(Aws.config[:region]).to eq('CONFIG_DEFAULT_REGION')
+    expect(Aws.config[:credentials].credentials.access_key_id).to eq('CREDS_DEV_ACCESS_KEY_ID')
+    expect(Aws.config[:credentials].credentials.secret_access_key).to eq('CREDS_DEV_SECRET_ACCESS_KEY')
   end
 
   it 'export AWS_PROIFLE' do
     stub_const('ENV', { 'AWS_PROFILE' => 'dev' })
     Awsecrets.load(profile: nil)
-    expect(Aws.config[:region]).to eq('ap-northeast-1')
-    expect(Aws.config[:credentials].credentials.access_key_id).to eq('DEV_ACCESS_KEY_ID')
-    expect(Aws.config[:credentials].credentials.secret_access_key).to eq('DEV_SECRET_ACCESS_KEY')
+    expect(Aws.config[:region]).to eq('CONFIG_DEFAULT_REGION')
+    expect(Aws.config[:credentials].credentials.access_key_id).to eq('CREDS_DEV_ACCESS_KEY_ID')
+    expect(Aws.config[:credentials].credentials.secret_access_key).to eq('CREDS_DEV_SECRET_ACCESS_KEY')
   end
 
   it 'secrets.yml' do
     Awsecrets.load(profile: nil, secrets_path: File.expand_path(File.join(fixtures_path, 'secrets.yml')))
-    expect(Aws.config[:region]).to eq('ap-northeast-1')
+    expect(Aws.config[:region]).to eq('YAML_REGION')
     expect(Aws.config[:credentials].credentials.access_key_id).to eq('YAML_ACCESS_KEY_ID')
     expect(Aws.config[:credentials].credentials.secret_access_key).to eq('YAML_SECRET_ACCESS_KEY')
   end
