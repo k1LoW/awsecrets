@@ -42,7 +42,7 @@ class MyAwsCLI < Thor
   def find_instance(id)
     Awsecrets.load(profile: options[:profile], region: options[:region])
     ec2_client = Aws::EC2::Client.new
-    puts ec2_client.describe_instances({ instance_ids: [id] }).instances
+    puts ec2_client.describe_instances({ instance_ids: [id] }).reservations.first.instances.first
   end
 end
 
