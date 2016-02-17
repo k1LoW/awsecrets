@@ -114,7 +114,7 @@ describe Awsecrets do
       expect(Aws.config[:credentials].credentials.access_key_id).to eq('CREDS_PRODUCTION_ACCESS_KEY_ID')
       expect(Aws.config[:credentials].credentials.secret_access_key).to eq('CREDS_PRODUCTION_SECRET_ACCESS_KEY')
     end
-    
+
     it '--region option > AWS_REGION' do
       stub_const('ENV', { 'AWS_REGION' => 'ENV_REGION' })
       Awsecrets.load(region: 'OPTION_REGION')
@@ -126,7 +126,7 @@ describe Awsecrets do
     it 'AWS_REGION > AWS_DEFAULT_REGION' do
       stub_const('ENV', {
                    'AWS_REGION' => 'ENV_REGION',
-                   'AWS_DEFAULT_REGION' => 'ENV_DEFAULT_REGION',
+                   'AWS_DEFAULT_REGION' => 'ENV_DEFAULT_REGION'
                  })
       Awsecrets.load
       expect(Aws.config[:region]).to eq('ENV_REGION')

@@ -31,7 +31,7 @@ module Awsecrets
     return unless @profile
     aws_config = AWSConfig.profiles[@profile]
     @region = aws_config.config_hash[:region] if aws_config
-    @credentials = Aws::SharedCredentials.new(profile_name: @profile) 
+    @credentials = Aws::SharedCredentials.new(profile_name: @profile)
   end
 
   def self.load_env
