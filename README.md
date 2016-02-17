@@ -28,6 +28,29 @@ Or install it yourself as:
 
     $ gem install awsecrets
 
+## Usage example
+
+```ruby
+require 'thor'
+require 'awsecrets'
+
+class MyAwsCLI < Thor
+  class_option :profile
+  class_option :region
+
+  desc "Find EC2 by Instance ID", "Find EC2 by Instance ID"
+  def find_instance_by_id(id)
+    Awsecrets.load(profile: options[:profile], region: options[:region])
+    ec2_client = Aws::EC2::Client.new
+    ec2_client.describe_instances({
+                                    instance_ids: [id]
+                                  })
+  end
+end
+
+MyAwsCLI.start(ARGV)
+```
+
 ## Contributing
 
 1. Fork it ( https://github.com/k1LoW/awsecrets/fork )
