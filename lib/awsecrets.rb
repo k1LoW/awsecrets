@@ -25,8 +25,6 @@ module Awsecrets
     Aws.config[:credentials] = @credentials
   end
 
-  private
-
   def self.load_command
     return unless @profile
     aws_config = AWSConfig.profiles[@profile]
