@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'pp'
 
 describe Awsecrets do
   let(:fixtures_path) do
