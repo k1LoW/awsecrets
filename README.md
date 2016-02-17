@@ -38,8 +38,8 @@ class MyAwsCLI < Thor
   class_option :profile
   class_option :region
 
-  desc "Find EC2 by Instance ID", "Find EC2 by Instance ID"
-  def find_instance_by_id(id)
+  desc "find_instance [Instance ID]", "Find EC2 by Instance ID"
+  def find_instance(id)
     Awsecrets.load(profile: options[:profile], region: options[:region])
     ec2_client = Aws::EC2::Client.new
     ec2_client.describe_instances({
