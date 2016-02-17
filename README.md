@@ -2,6 +2,16 @@
 
 AWS credentials loader
 
+## awsecrets config precedence
+
+1. Command Line Options
+2. Environment Variables
+3. YAML file (secrets.yml)
+4. The AWS credentials file
+5. The CLI configuration file
+
+(See http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html#config-settings-and-precedence)
+
 ## Installation
 
 Add this line to your application's Gemfile:
