@@ -1,0 +1,6 @@
+#!/usr/bin/env ruby
+require 'awsecrets'
+
+Awsecrets.load
+ec2_client = Aws::EC2::Client.new
+puts ec2_client.describe_instances({ instance_ids: [ARGV.first] }).reservations.first.instances.first
