@@ -4,7 +4,7 @@ AWS credentials loader
 
 ## awsecrets config precedence
 
-1. Command Line Options
+1. Command Line Options (Awscreds#load method args OR self optparse)
 2. Environment Variables
 3. YAML file (secrets.yml)
 4. The AWS credentials file
@@ -30,23 +30,33 @@ Or install it yourself as:
 
 ## Usage example
 
+Create command line tool `ec2sample` like following code
+
 ```ruby
-require 'thor'
+#!/usr/bin/env ruby
 require 'awsecrets'
+Awsecrets.load
+ec2_client = Aws::EC2::Client.new
+puts ec2_client.describe_instances({ instance_ids: [ARGV.first] }).reservations.first.instances.first
+```
 
-class MyAwsCLI < Thor
-  class_option :profile
-  class_option :region
+And execute
 
-  desc "find_instance [Instance ID]", "Find EC2 by Instance ID"
-  def find_instance(id)
-    Awsecrets.load(profile: options[:profile], region: options[:region])
-    ec2_client = Aws::EC2::Client.new
-    puts ec2_client.describe_instances({ instance_ids: [id] }).reservations.first.instances.first
-  end
-end
+```sh
+$ ec2sample i-1aa1aaaa --profile mycreds --region ap-northeast-1
 
-MyAwsCLI.start(ARGV)
+or
+
+$ AWS_ACCESS_KEY_ID=XXXXXXXXXXXXXXXXXXXX AWS_SECRET_ACCESS_KEY=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX AWS_REGION=ap-northeast-1 ec2sample i-1aa1aaaa
+
+or
+
+$ cat <<EOF > secrets.yml
+region: ap-northeast-1
+aws_access_key_id: XXXXXXXXXXXXXXXXXXXX
+aws_secret_access_key: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+EOF
+$ ec2sample i-1aa1aaaa
 ```
 
 ## Contributing
