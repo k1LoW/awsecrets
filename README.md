@@ -4,8 +4,7 @@ AWS credentials loader
 
 ## awsecrets config precedence
 
-0. (Awscreds#load method args)
-1. Command Line Options
+1. Command Line Options (Awscreds#load method args OR self optparse)
 2. Environment Variables
 3. YAML file (secrets.yml)
 4. The AWS credentials file

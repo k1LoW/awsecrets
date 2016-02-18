@@ -11,9 +11,8 @@ module Awsecrets
     @region = region
     @credentials = nil
 
-    load_method_args
     # 1. Command Line Options
-    load_options
+    load_options if load_method_args
     # 2. Environment Variables
     load_env
     # 3. YAML file (secrets.yml)
@@ -28,21 +27,25 @@ module Awsecrets
   end
 
   def self.load_method_args
-    return unless @profile
+    return false unless @profile
     aws_config = AWSConfig.profiles[@profile]
     @region = aws_config.config_hash[:region] if aws_config && @region.nil?
     @credentials = Aws::SharedCredentials.new(profile_name: @profile)
+    true
   end
 
   def self.load_options
     opt = OptionParser.new
     opt.on('--profile PROFILE') { |v| @profile = v } unless @profile
     opt.on('--region REGION') { |v| @region = v } unless @region
-    opt.parse!(ARGV)
+    opt.on('--secrets_path SECRETS_PATH') { |v| @secrets_path = v } unless @secrets_path
+    begin
+      opt.parse!(ARGV)
+    rescue OptionParser::InvalidOption
+    end
     return unless @profile
     aws_config = AWSConfig.profiles[@profile]
     @region = aws_config.config_hash[:region] if aws_config && @region.nil?
-    @credentials = Aws::SharedCredentials.new(profile_name: @profile)
     @credentials = Aws::SharedCredentials.new(profile_name: @profile)
   end
 
