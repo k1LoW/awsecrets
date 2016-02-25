@@ -78,6 +78,20 @@ describe Awsecrets do
       expect(Aws.config[:region]).to eq('CONFIG_DEFAULT_REGION')
       expect(Aws.config[:credentials].credentials.access_key_id).to eq('ENV_ACCESS_KEY_ID')
       expect(Aws.config[:credentials].credentials.secret_access_key).to eq('ENV_SECRET_ACCESS_KEY')
+      expect(Aws.config[:credentials].credentials.session_token).to be_nil
+    end
+
+    it 'load AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_SESSION_TOKEN' do
+      stub_const('ENV', {
+                   'AWS_ACCESS_KEY_ID' => 'ENV_ACCESS_KEY_ID',
+                   'AWS_SECRET_ACCESS_KEY' => 'ENV_SECRET_ACCESS_KEY',
+                   'AWS_SESSION_TOKEN' => 'ENV_SESSION_TOKEN'
+                 })
+      Awsecrets.load
+      expect(Aws.config[:region]).to eq('CONFIG_DEFAULT_REGION')
+      expect(Aws.config[:credentials].credentials.access_key_id).to eq('ENV_ACCESS_KEY_ID')
+      expect(Aws.config[:credentials].credentials.secret_access_key).to eq('ENV_SECRET_ACCESS_KEY')
+      expect(Aws.config[:credentials].credentials.session_token).to eq('ENV_SESSION_TOKEN')
     end
   end
 
