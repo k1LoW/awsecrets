@@ -3,7 +3,6 @@ require 'optparse'
 require 'aws-sdk'
 require 'aws_config'
 require 'yaml'
-require 'pp'
 
 module Awsecrets
   def self.load(profile: nil, region: nil, secrets_path: 'secrets.yml')
