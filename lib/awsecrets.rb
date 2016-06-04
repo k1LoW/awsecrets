@@ -58,7 +58,8 @@ module Awsecrets
       @credentials = @credentials = Aws::Credentials.new(
         ENV['AWS_ACCESS_KEY_ID'],
         ENV['AWS_SECRET_ACCESS_KEY'],
-        ENV['AWS_SESSION_TOKEN']) # Not necessary
+        ENV['AWS_SESSION_TOKEN'] # Not necessary
+      )
     end
   end
 
@@ -70,7 +71,8 @@ module Awsecrets
     if @credentials.nil? && creds && creds.include?('aws_access_key_id') && creds.include?('aws_secret_access_key')
       @credentials = Aws::Credentials.new(
         creds['aws_access_key_id'],
-        creds['aws_secret_access_key'])
+        creds['aws_secret_access_key']
+      )
     end
   end
 
