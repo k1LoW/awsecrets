@@ -8,6 +8,7 @@ describe Awsecrets do
   before(:each) do
     stub_const('ENV', {})
     AWSConfig.config_file = File.expand_path(File.join(fixtures_path, '.aws', 'config'))
+    AWSConfig.credentials_file = File.expand_path(File.join(fixtures_path, '.aws', 'credentials'))
     allow(Dir).to receive(:home).and_return(fixtures_path)
   end
 

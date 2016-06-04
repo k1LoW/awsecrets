@@ -28,8 +28,7 @@ module Awsecrets
 
   def self.load_method_args
     return false unless @profile
-    aws_config = AWSConfig.profiles[@profile]
-    @region = aws_config.config_hash[:region] if aws_config && @region.nil?
+    @region = AWSConfig[@profile]['region'] if AWSConfig[@profile]['region'] && @region.nil?
     @credentials = Aws::SharedCredentials.new(profile_name: @profile)
     true
   end
@@ -44,8 +43,7 @@ module Awsecrets
     rescue OptionParser::InvalidOption
     end
     return unless @profile
-    aws_config = AWSConfig.profiles[@profile]
-    @region = aws_config.config_hash[:region] if aws_config && @region.nil?
+    @region = AWSConfig[@profile]['region'] if AWSConfig[@profile]['region'] && @region.nil?
     @credentials = Aws::SharedCredentials.new(profile_name: @profile)
   end
 
@@ -60,7 +58,8 @@ module Awsecrets
       @credentials = @credentials = Aws::Credentials.new(
         ENV['AWS_ACCESS_KEY_ID'],
         ENV['AWS_SECRET_ACCESS_KEY'],
-        ENV['AWS_SESSION_TOKEN']) # Not necessary
+        ENV['AWS_SESSION_TOKEN'] # Not necessary
+      )
     end
   end
 
@@ -72,7 +71,8 @@ module Awsecrets
     if @credentials.nil? && creds && creds.include?('aws_access_key_id') && creds.include?('aws_secret_access_key')
       @credentials = Aws::Credentials.new(
         creds['aws_access_key_id'],
-        creds['aws_secret_access_key'])
+        creds['aws_secret_access_key']
+      )
     end
   end
 
@@ -83,8 +83,10 @@ module Awsecrets
 
   def self.load_config
     return unless @region.nil?
-    aws_config = AWSConfig.profiles[@profile]
-    aws_config = AWSConfig.profiles['default'] unless aws_config
-    @region = aws_config.config_hash[:region] if aws_config
+    @region = if AWSConfig[@profile] && AWSConfig[@profile]['region']
+                AWSConfig[@profile]['region']
+              else
+                AWSConfig['default']['region']
+              end
   end
 end
