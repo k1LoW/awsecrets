@@ -3,6 +3,7 @@ require 'optparse'
 require 'aws-sdk'
 require 'aws_config'
 require 'yaml'
+require 'pp'
 
 module Awsecrets
   def self.load(profile: nil, region: nil, secrets_path: 'secrets.yml')
@@ -28,8 +29,7 @@ module Awsecrets
 
   def self.load_method_args
     return false unless @profile
-    aws_config = AWSConfig.profiles[@profile]
-    @region = aws_config.config_hash[:region] if aws_config && @region.nil?
+    @region = AWSConfig[@profile]['region'] if AWSConfig[@profile]['region'] && @region.nil?
     @credentials = Aws::SharedCredentials.new(profile_name: @profile)
     true
   end
@@ -44,8 +44,7 @@ module Awsecrets
     rescue OptionParser::InvalidOption
     end
     return unless @profile
-    aws_config = AWSConfig.profiles[@profile]
-    @region = aws_config.config_hash[:region] if aws_config && @region.nil?
+    @region = AWSConfig[@profile]['region'] if AWSConfig[@profile]['region'] && @region.nil?
     @credentials = Aws::SharedCredentials.new(profile_name: @profile)
   end
 
@@ -83,8 +82,10 @@ module Awsecrets
 
   def self.load_config
     return unless @region.nil?
-    aws_config = AWSConfig.profiles[@profile]
-    aws_config = AWSConfig.profiles['default'] unless aws_config
-    @region = aws_config.config_hash[:region] if aws_config
+    @region = if AWSConfig[@profile] && AWSConfig[@profile]['region']
+                AWSConfig[@profile]['region']
+              else
+                AWSConfig['default']['region']
+              end
   end
 end
