@@ -54,13 +54,12 @@ module Awsecrets
       @credentials = Aws::SharedCredentials.new(profile_name: ENV['AWS_PROFILE'])
       @profile = ENV['AWS_PROFILE']
     end
-    if @credentials.nil? && ENV['AWS_ACCESS_KEY_ID'] && ENV['AWS_SECRET_ACCESS_KEY']
-      @credentials = @credentials = Aws::Credentials.new(
-        ENV['AWS_ACCESS_KEY_ID'],
-        ENV['AWS_SECRET_ACCESS_KEY'],
-        ENV['AWS_SESSION_TOKEN'] # Not necessary
-      )
-    end
+    return unless @credentials.nil? && ENV['AWS_ACCESS_KEY_ID'] && ENV['AWS_SECRET_ACCESS_KEY']
+    @credentials = Aws::Credentials.new(
+      ENV['AWS_ACCESS_KEY_ID'],
+      ENV['AWS_SECRET_ACCESS_KEY'],
+      ENV['AWS_SESSION_TOKEN'] # Not necessary
+    )
   end
 
   def self.load_yaml
@@ -68,12 +67,13 @@ module Awsecrets
     if @region.nil? && creds
       @region = creds['region'] if creds.include?('region')
     end
-    if @credentials.nil? && creds && creds.include?('aws_access_key_id') && creds.include?('aws_secret_access_key')
-      @credentials = Aws::Credentials.new(
-        creds['aws_access_key_id'],
-        creds['aws_secret_access_key']
-      )
-    end
+    return unless @credentials.nil? && creds &&
+                  creds.include?('aws_access_key_id') &&
+                  creds.include?('aws_secret_access_key')
+    @credentials = Aws::Credentials.new(
+      creds['aws_access_key_id'],
+      creds['aws_secret_access_key']
+    )
   end
 
   def self.load_creds
