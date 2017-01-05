@@ -70,9 +70,12 @@ module Awsecrets
     return unless @credentials.nil? && creds &&
                   creds.include?('aws_access_key_id') &&
                   creds.include?('aws_secret_access_key')
+    session_token = nil
+    session_token = creds['aws_session_token'] if creds.include?('aws_session_token')
     @credentials = Aws::Credentials.new(
       creds['aws_access_key_id'],
-      creds['aws_secret_access_key']
+      creds['aws_secret_access_key'],
+      session_token
     )
   end
 
