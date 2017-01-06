@@ -17,7 +17,7 @@ describe Awsecrets do
           },
           credentials: {
             access_key_id: 'STS_ASSUMED_ACCESS_KEY_ID',
-            expiration: Time.new(2016, 1, 6, 10, 00, 00, '+00:00'),
+            expiration: Time.new(2016, 1, 6, 10, 0, 0, '+00:00'),
             secret_access_key: 'STS_ASSUMED_SECRET_ACCESS_KEY',
             session_token: 'STS_ASSUMED_SESSION_TOKEN'
           },
