@@ -12,6 +12,8 @@ module Awsecrets
     @access_key_id = nil
     @secret_access_key = nil
     @session_token = nil
+    @role_arn = nil
+    @source_profile = nil
 
     # 1. Command Line Options
     load_options if load_method_args
@@ -67,6 +69,8 @@ module Awsecrets
     @access_key_id ||= creds['aws_access_key_id']
     @secret_access_key ||= creds['aws_secret_access_key']
     @session_token ||= creds['aws_session_token'] if creds.include?('aws_session_token')
+    @role_arn ||= creds['role_arn'] if creds.include?('role_arn')
+    @source_profile ||= creds['source_profile'] if creds.include?('source_profile')
   end
 
   def self.load_creds
@@ -78,12 +82,34 @@ module Awsecrets
                 else
                   AWSConfig['default']['region']
                 end
+
+    @role_arn ||= AWSConfig[@profile]['role_arn'] if AWSConfig[@profile]
+    @source_profile ||= AWSConfig[@profile]['source_profile'] if AWSConfig[@profile]
+    @role_session_name ||= AWSConfig[@profile]['role_session_name'] if AWSConfig[@profile]
   end
 
   def self.set_aws_config
     Aws.config[:region] = @region
+
+    if @role_arn && @role_session_name && @source_profile
+      region = if AWSConfig[@source_profile] && AWSConfig[@source_profile]['region']
+                 AWSConfig[@source_profile]['region']
+               else
+                 AWSConfig['default']['region']
+               end
+
+      credentials ||= Aws::AssumeRoleCredentials.new(
+        client: Aws::STS::Client.new(
+          region: region,
+          credentials: Aws::SharedCredentials.new(profile_name: @source_profile.name)
+        ),
+        role_arn: @role_arn,
+        role_session_name: @role_session_name
+      )
+    end
+
     credentials ||= Aws::SharedCredentials.new(profile_name: @profile) if @profile
-    credentials ||= Aws::SharedCredentials.new(profile_name: nil) unless @access_key_id
+    credentials ||= Aws::SharedCredentials.new(profile_name: 'default') unless @access_key_id
     credentials ||= Aws::Credentials.new(
       @access_key_id,
       @secret_access_key,
