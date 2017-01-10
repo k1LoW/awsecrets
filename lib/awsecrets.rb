@@ -9,6 +9,7 @@ module Awsecrets
     @profile = profile
     @region = region
     @secrets_path = secrets_path
+    @credentials = nil
     @access_key_id = nil
     @secret_access_key = nil
     @session_token = nil
@@ -70,7 +71,20 @@ module Awsecrets
     @secret_access_key ||= creds['aws_secret_access_key']
     @session_token ||= creds['aws_session_token'] if creds.include?('aws_session_token')
     @role_arn ||= creds['role_arn'] if creds.include?('role_arn')
-    @source_profile ||= creds['source_profile'] if creds.include?('source_profile')
+    @role_session_name ||= creds['role_session_name'] if creds.include?('role_session_name')
+    return unless @role_arn && @role_session_name
+    @credentials ||= Aws::AssumeRoleCredentials.new(
+      client: Aws::STS::Client.new(
+        region: @region,
+        credentials: Aws::SharedCredentials.new(
+          region: @region,
+          access_key_id: @access_key_id,
+          secret_access_key: @secret_access_key
+        )
+      ),
+      role_arn: @role_arn,
+      role_session_name: @role_session_name
+    )
   end
 
   def self.load_creds
@@ -84,21 +98,21 @@ module Awsecrets
                 end
 
     @role_arn ||= AWSConfig[@profile]['role_arn'] if AWSConfig[@profile]
-    @source_profile ||= AWSConfig[@profile]['source_profile'] if AWSConfig[@profile]
     @role_session_name ||= AWSConfig[@profile]['role_session_name'] if AWSConfig[@profile]
+    @source_profile ||= AWSConfig[@profile]['source_profile'] if AWSConfig[@profile]
   end
 
   def self.set_aws_config
     Aws.config[:region] = @region
 
     if @role_arn && @role_session_name && @source_profile
-      region = if AWSConfig[@source_profile] && AWSConfig[@source_profile]['region']
-                 AWSConfig[@source_profile]['region']
+      region = if AWSConfig[@source_profile.name] && AWSConfig[@source_profile.name]['region']
+                 AWSConfig[@source_profile.name]['region']
                else
                  AWSConfig['default']['region']
                end
 
-      credentials ||= Aws::AssumeRoleCredentials.new(
+      @credentials ||= Aws::AssumeRoleCredentials.new(
         client: Aws::STS::Client.new(
           region: region,
           credentials: Aws::SharedCredentials.new(profile_name: @source_profile.name)
@@ -108,14 +122,14 @@ module Awsecrets
       )
     end
 
-    credentials ||= Aws::SharedCredentials.new(profile_name: @profile) if @profile
-    credentials ||= Aws::SharedCredentials.new(profile_name: 'default') unless @access_key_id
-    credentials ||= Aws::Credentials.new(
+    @credentials ||= Aws::SharedCredentials.new(profile_name: @profile) if @profile
+    @credentials ||= Aws::SharedCredentials.new(profile_name: 'default') unless @access_key_id
+    @credentials ||= Aws::Credentials.new(
       @access_key_id,
       @secret_access_key,
       @session_token
     )
 
-    Aws.config[:credentials] = credentials
+    Aws.config[:credentials] = @credentials
   end
 end
