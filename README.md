@@ -59,6 +59,53 @@ EOF
 $ ec2sample i-1aa1aaaa
 ```
 
+### Use AssumeRole
+
+Support `role_arn` `role_session_name` `source_profile`.
+
+#### 1. .aws/config and .aws/credentials
+
+see http://docs.aws.amazon.com/cli/latest/userguide/cli-roles.html
+
+```
+# .aws/config
+[profile assumed]
+role_arn = arn:aws:iam::123456780912:role/assumed-role
+role_session_name = awsecrets-assume-role
+source_profile = assume_test
+```
+
+```
+# .aws/credentials
+[assume_test]
+aws_access_key_id = XXXXXXXXXXXXXXXXXXXX
+aws_secret_access_key = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+```
+
+And execute
+
+```sh
+$ ec2sample i-1aa1aaaa --profile assumed --region ap-northeast-1
+```
+
+#### 2. secrets.yml
+
+```sh
+$ cat <<EOF > secrets.yml
+region: ap-northeast-1
+aws_access_key_id: XXXXXXXXXXXXXXXXXXXX
+aws_secret_access_key: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+role_arn = arn:aws:iam::123456780912:role/assumed-role
+role_session_name = awsecrets-assume-role
+```
+
+And execute
+
+```sh
+$ ec2sample i-1aa1aaaa
+```
+
+
 ## Contributing
 
 1. Fork it ( https://github.com/k1LoW/awsecrets/fork )

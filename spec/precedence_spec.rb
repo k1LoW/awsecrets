@@ -7,13 +7,10 @@ describe Awsecrets do
 
   before(:each) do
     stub_const('ENV', {})
+    Aws.config = {}
     AWSConfig.config_file = File.expand_path(File.join(fixtures_path, '.aws', 'config'))
     AWSConfig.credentials_file = File.expand_path(File.join(fixtures_path, '.aws', 'credentials'))
     allow(Dir).to receive(:home).and_return(fixtures_path)
-  end
-
-  it 'has a version number' do
-    expect(Awsecrets::VERSION).not_to be nil
   end
 
   context 'Precedence' do
