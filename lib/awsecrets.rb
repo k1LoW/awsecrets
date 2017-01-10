@@ -9,12 +9,7 @@ module Awsecrets
     @profile = profile
     @region = region
     @secrets_path = secrets_path
-    @credentials = nil
-    @access_key_id = nil
-    @secret_access_key = nil
-    @session_token = nil
-    @role_arn = nil
-    @source_profile = nil
+    @credentials = @access_key_id = @secret_access_key = @session_token = @role_arn = @source_profile = nil
 
     # 1. Command Line Options
     load_options if load_method_args
@@ -124,11 +119,7 @@ module Awsecrets
 
     @credentials ||= Aws::SharedCredentials.new(profile_name: @profile) if @profile
     @credentials ||= Aws::SharedCredentials.new(profile_name: 'default') unless @access_key_id
-    @credentials ||= Aws::Credentials.new(
-      @access_key_id,
-      @secret_access_key,
-      @session_token
-    )
+    @credentials ||= Aws::Credentials.new(@access_key_id, @secret_access_key, @session_token)
 
     Aws.config[:credentials] = @credentials
   end
