@@ -61,6 +61,8 @@ $ ec2sample i-1aa1aaaa
 
 ### Use AssumeRole
 
+Support `role_arn` `role_session_name` `source_profile`.
+
 #### 1. .aws/config and .aws/credentials
 
 see http://docs.aws.amazon.com/cli/latest/userguide/cli-roles.html
