@@ -71,7 +71,6 @@ see http://docs.aws.amazon.com/cli/latest/userguide/cli-roles.html
 # .aws/config
 [profile assumed]
 role_arn = arn:aws:iam::123456780912:role/assumed-role
-role_session_name = awsecrets-assume-role
 source_profile = assume_test
 ```
 
@@ -96,7 +95,6 @@ region: ap-northeast-1
 aws_access_key_id: XXXXXXXXXXXXXXXXXXXX
 aws_secret_access_key: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 role_arn = arn:aws:iam::123456780912:role/assumed-role
-role_session_name = awsecrets-assume-role
 ```
 
 And execute

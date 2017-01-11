@@ -67,7 +67,8 @@ module Awsecrets
     @session_token ||= creds['aws_session_token'] if creds.include?('aws_session_token')
     @role_arn ||= creds['role_arn'] if creds.include?('role_arn')
     @role_session_name ||= creds['role_session_name'] if creds.include?('role_session_name')
-    return unless @role_arn && @role_session_name
+    return unless @role_arn
+    @role_session_name ||= generate_session_name
     @credentials ||= Aws::AssumeRoleCredentials.new(
       client: Aws::STS::Client.new(
         region: @region,
@@ -100,7 +101,8 @@ module Awsecrets
   def self.set_aws_config
     Aws.config[:region] = @region
 
-    if @role_arn && @role_session_name && @source_profile
+    if @role_arn && @source_profile
+      @role_session_name ||= generate_session_name
       region = if AWSConfig[@source_profile.name] && AWSConfig[@source_profile.name]['region']
                  AWSConfig[@source_profile.name]['region']
                else
@@ -122,5 +124,9 @@ module Awsecrets
     @credentials ||= Aws::Credentials.new(@access_key_id, @secret_access_key, @session_token)
 
     Aws.config[:credentials] = @credentials
+  end
+
+  def self.generate_session_name
+    "awsecrets-session-#{Time.now.to_i}"
   end
 end

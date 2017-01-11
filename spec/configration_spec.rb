@@ -138,6 +138,14 @@ describe Awsecrets do
         expect(Aws.config[:credentials].credentials.secret_access_key).to eq('STS_ASSUMED_SECRET_ACCESS_KEY')
       end
 
+      it 'load AWS_PROIFLE=assumed_no_session_name' do
+        stub_const('ENV', { 'AWS_PROFILE' => 'assumed_no_session_name' })
+        Awsecrets.load
+        expect(Aws.config[:region]).to eq('CONFIG_ASSUME_TEST_REGION')
+        expect(Aws.config[:credentials].credentials.access_key_id).to eq('STS_ASSUMED_ACCESS_KEY_ID')
+        expect(Aws.config[:credentials].credentials.secret_access_key).to eq('STS_ASSUMED_SECRET_ACCESS_KEY')
+      end
+
       it 'load secrets_with_role_arn.yml' do
         Awsecrets.load(secrets_path: File.expand_path(File.join(fixtures_path, 'secrets_with_role_arn.yml')))
         expect(Aws.config[:region]).to eq('YAML_REGION')
