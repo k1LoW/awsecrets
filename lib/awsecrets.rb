@@ -18,7 +18,7 @@ module Awsecrets
     # 3. YAML file (secrets.yml)
     load_yaml
     # 4. The AWS credentials file
-    load_creds
+    # load_creds
     # 5. The CLI configuration file
     load_config
 
@@ -81,9 +81,6 @@ module Awsecrets
       role_arn: @role_arn,
       role_session_name: @role_session_name
     )
-  end
-
-  def self.load_creds
   end
 
   def self.load_config
