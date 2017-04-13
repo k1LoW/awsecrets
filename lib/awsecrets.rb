@@ -72,11 +72,8 @@ module Awsecrets
     @credentials ||= Aws::AssumeRoleCredentials.new(
       client: Aws::STS::Client.new(
         region: @region,
-        credentials: Aws::SharedCredentials.new(
-          region: @region,
-          access_key_id: @access_key_id,
-          secret_access_key: @secret_access_key
-        )
+        access_key_id: @access_key_id,
+        secret_access_key: @secret_access_key
       ),
       role_arn: @role_arn,
       role_session_name: @role_session_name
