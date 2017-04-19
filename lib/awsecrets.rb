@@ -5,7 +5,7 @@ require 'aws_config'
 require 'yaml'
 
 module Awsecrets
-  def self.load(profile: nil, region: nil, secrets_path: 'secrets.yml')
+  def self.load(profile: nil, region: nil, secrets_path: nil)
     @profile = profile
     @region = region
     @secrets_path = secrets_path
@@ -48,6 +48,7 @@ module Awsecrets
     @region ||= ENV['AWS_REGION']
     @region ||= ENV['AWS_DEFAULT_REGION']
     @profile ||= ENV['AWS_PROFILE']
+    @secrets_path ||= ENV['AWS_SECRETS_PATH']
     return if @access_key_id
     return unless ENV['AWS_ACCESS_KEY_ID'] && ENV['AWS_SECRET_ACCESS_KEY']
     @access_key_id ||= ENV['AWS_ACCESS_KEY_ID']
@@ -56,7 +57,8 @@ module Awsecrets
   end
 
   def self.load_yaml
-    creds = YAML.load_file(@secrets_path) if File.exist?(@secrets_path)
+    @secrets_path ||= 'secrets.yml'
+    creds = YAML.load_file(@secrets_path) if File.exist?(File.expand_path(@secrets_path))
     @region ||= creds['region'] if creds && creds.include?('region')
     return if @access_key_id
     return unless creds &&

@@ -58,6 +58,15 @@ describe Awsecrets do
       expect(Aws.config[:credentials].credentials.session_token).to eq(nil)
     end
 
+    it 'load secrets_other.yml via AWS_SECRETS_PATH' do
+      stub_const('ENV', { 'AWS_SECRETS_PATH' => File.expand_path(File.join(fixtures_path, 'secrets_other.yml')) })
+      Awsecrets.load
+      expect(Aws.config[:region]).to eq('YAML_OTHER_REGION')
+      expect(Aws.config[:credentials].credentials.access_key_id).to eq('YAML_OTHER_ACCESS_KEY_ID')
+      expect(Aws.config[:credentials].credentials.secret_access_key).to eq('YAML_OTHER_SECRET_ACCESS_KEY')
+      expect(Aws.config[:credentials].credentials.session_token).to eq(nil)
+    end
+
     it 'load secrets_with_session_token.yml' do
       Awsecrets.load(secrets_path: File.expand_path(File.join(fixtures_path, 'secrets_with_session_token.yml')))
       expect(Aws.config[:region]).to eq('YAML_REGION')
