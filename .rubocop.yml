@@ -1,9 +1,6 @@
 AllCops:
   TargetRubyVersion: 2.1
 
-Lint/Eval:
-  Enabled: false
-
 Lint/HandleExceptions:
   Enabled: false
 
