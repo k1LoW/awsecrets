@@ -116,9 +116,9 @@ module Awsecrets
     end
 
     @credentials ||= Aws::SharedCredentials.new(profile_name: @profile) if @profile
+    @credentials ||= Aws::InstanceProfileCredentials.new()
     @credentials ||= Aws::SharedCredentials.new(profile_name: 'default') unless @access_key_id
     @credentials ||= Aws::Credentials.new(@access_key_id, @secret_access_key, @session_token)
-    @credentials ||= Aws::InstanceProfileCredentials.new()
 
     Aws.config[:credentials] = @credentials
   end
