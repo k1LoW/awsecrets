@@ -85,7 +85,7 @@ module Awsecrets
   def self.load_config
     @region ||= if AWSConfig[@profile] && AWSConfig[@profile]['region']
                   AWSConfig[@profile]['region']
-                else
+                elsif AWSConfig['default']
                   AWSConfig['default']['region']
                 end
 
@@ -115,6 +115,7 @@ module Awsecrets
       )
     end
 
+    @credentials ||= Aws::InstanceProfileCredentials.new()
     @credentials ||= Aws::SharedCredentials.new(profile_name: @profile) if @profile
     @credentials ||= Aws::SharedCredentials.new(profile_name: 'default') unless @access_key_id
     @credentials ||= Aws::Credentials.new(@access_key_id, @secret_access_key, @session_token)
