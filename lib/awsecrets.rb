@@ -2,6 +2,7 @@ require 'awsecrets/version'
 require 'optparse'
 require 'aws-sdk'
 require 'aws_config'
+require 'net/http'
 require 'yaml'
 
 module Awsecrets
@@ -95,6 +96,7 @@ module Awsecrets
   end
 
   def self.set_aws_config
+    @region ||= self.current_region
     Aws.config[:region] = @region
 
     if @role_arn && @source_profile
@@ -116,14 +118,20 @@ module Awsecrets
     end
 
     @credentials ||= Aws::SharedCredentials.new(profile_name: @profile) if @profile
-    @credentials ||= Aws::InstanceProfileCredentials.new()
-    @credentials ||= Aws::SharedCredentials.new(profile_name: 'default') unless @access_key_id
-    @credentials ||= Aws::Credentials.new(@access_key_id, @secret_access_key, @session_token)
+    @credentials ||= Aws::SharedCredentials.new(profile_name: 'default') if AWSConfig['default'] && !@access_key_id
+    @credentials ||= Aws::Credentials.new(@access_key_id, @secret_access_key, @session_token) if @access_key_id
+    @credentials ||= Aws::InstanceProfileCredentials.new
 
     Aws.config[:credentials] = @credentials
   end
 
   def self.generate_session_name
     "awsecrets-session-#{Time.now.to_i}"
+  end
+
+  def self.current_region
+    metadata_endpoint = 'http://169.254.169.254/latest/meta-data/'
+    az = Net::HTTP.get(URI.parse(metadata_endpoint + 'placement/availability-zone'))
+    az[0...-1]
   end
 end
