@@ -104,6 +104,17 @@ And execute
 $ ec2sample i-1aa1aaaa
 ```
 
+### Disable load YAML(secrets.yml)
+
+```ruby
+Awsecrets.load(disable_load_secrets:true)
+```
+
+or
+
+```ruby
+Awsecrets.load(secrets_path:false)
+```
 
 ## Contributing
 
