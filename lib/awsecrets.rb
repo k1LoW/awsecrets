@@ -10,6 +10,8 @@ module Awsecrets
     @profile = profile
     @region = region
     @secrets_path = secrets_path
+    @disable_load_secrets = false
+    @disable_load_secrets = true if secrets_path == false
     @credentials = @access_key_id = @secret_access_key = @session_token = @role_arn = @source_profile = nil
 
     # 1. Command Line Options
@@ -58,6 +60,7 @@ module Awsecrets
   end
 
   def self.load_yaml
+    return if @disable_load_secrets
     @secrets_path ||= 'secrets.yml'
     creds = YAML.load_file(@secrets_path) if File.exist?(File.expand_path(@secrets_path))
     @region ||= creds['region'] if creds && creds.include?('region')
