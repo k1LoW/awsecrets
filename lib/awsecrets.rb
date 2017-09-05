@@ -6,11 +6,11 @@ require 'net/http'
 require 'yaml'
 
 module Awsecrets
-  def self.load(profile: nil, region: nil, secrets_path: nil)
+  def self.load(profile: nil, region: nil, secrets_path: nil, disable_load_secrets: false)
     @profile = profile
     @region = region
     @secrets_path = secrets_path
-    @disable_load_secrets = false
+    @disable_load_secrets = disable_load_secrets
     @disable_load_secrets = true if secrets_path == false
     @credentials = @access_key_id = @secret_access_key = @session_token = @role_arn = @source_profile = nil
 

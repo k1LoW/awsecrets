@@ -32,9 +32,19 @@ describe Awsecrets do
   end
 
   context 'Disable load YAML' do
-    it 'Disable AWS_SECRETS_PATH' do
+    it 'secrets_path: false' do
       stub_const('ENV', { 'AWS_SECRETS_PATH' => File.expand_path(File.join(fixtures_path, 'secrets.yml')) })
       Awsecrets.load(secrets_path: false)
+      expect(Aws.config[:region]).to eq('CONFIG_DEFAULT_REGION')
+      expect(Aws.config[:credentials].credentials.access_key_id).to eq('CREDS_DEFAULT_ACCESS_KEY_ID')
+      expect(Aws.config[:credentials].credentials.secret_access_key).to eq('CREDS_DEFAULT_SECRET_ACCESS_KEY')
+    end
+  end
+
+  context 'Disable load YAML' do
+    it 'disable_load_secrets: true' do
+      stub_const('ENV', { 'AWS_SECRETS_PATH' => File.expand_path(File.join(fixtures_path, 'secrets.yml')) })
+      Awsecrets.load(disable_load_secrets: true)
       expect(Aws.config[:region]).to eq('CONFIG_DEFAULT_REGION')
       expect(Aws.config[:credentials].credentials.access_key_id).to eq('CREDS_DEFAULT_ACCESS_KEY_ID')
       expect(Aws.config[:credentials].credentials.secret_access_key).to eq('CREDS_DEFAULT_SECRET_ACCESS_KEY')
