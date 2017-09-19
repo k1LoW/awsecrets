@@ -1,4 +1,4 @@
-require 'awsecrets/version'
+require_relative 'awsecrets/version'
 require 'optparse'
 require 'aws-sdk'
 require 'aws_config'
@@ -7,12 +7,20 @@ require 'yaml'
 
 module Awsecrets
   def self.load(profile: nil, region: nil, secrets_path: nil, disable_load_secrets: false)
-    @profile = profile
-    @region = region
-    @secrets_path = secrets_path
+    @profile              = profile
+    @region               = region
+    @secrets_path         = secrets_path
     @disable_load_secrets = disable_load_secrets
     @disable_load_secrets = true if secrets_path == false
-    @credentials = @access_key_id = @secret_access_key = @session_token = @role_arn = @source_profile = nil
+
+    @credentials       = nil
+    @access_key_id     = nil
+    @secret_access_key = nil
+    @session_token     = nil
+    @role_arn          = nil
+    @external_id       = nil
+    @source_profile    = nil
+    @role_session_name = nil
 
     # 1. Command Line Options
     load_options if load_method_args
@@ -48,15 +56,15 @@ module Awsecrets
   end
 
   def self.load_env
-    @region ||= ENV['AWS_REGION']
-    @region ||= ENV['AWS_DEFAULT_REGION']
-    @profile ||= ENV['AWS_PROFILE']
+    @region       ||= ENV['AWS_REGION']
+    @region       ||= ENV['AWS_DEFAULT_REGION']
+    @profile      ||= ENV['AWS_PROFILE']
     @secrets_path ||= ENV['AWS_SECRETS_PATH']
     return if @access_key_id
     return unless ENV['AWS_ACCESS_KEY_ID'] && ENV['AWS_SECRET_ACCESS_KEY']
-    @access_key_id ||= ENV['AWS_ACCESS_KEY_ID']
+    @access_key_id     ||= ENV['AWS_ACCESS_KEY_ID']
     @secret_access_key ||= ENV['AWS_SECRET_ACCESS_KEY']
-    @session_token ||= ENV['AWS_SESSION_TOKEN']
+    @session_token     ||= ENV['AWS_SESSION_TOKEN']
   end
 
   def self.load_yaml
@@ -68,21 +76,24 @@ module Awsecrets
     return unless creds &&
                   creds.include?('aws_access_key_id') &&
                   creds.include?('aws_secret_access_key')
-    @access_key_id ||= creds['aws_access_key_id']
+    @access_key_id     ||= creds['aws_access_key_id']
     @secret_access_key ||= creds['aws_secret_access_key']
-    @session_token ||= creds['aws_session_token'] if creds.include?('aws_session_token')
-    @role_arn ||= creds['role_arn'] if creds.include?('role_arn')
+    @session_token     ||= creds['aws_session_token'] if creds.include?('aws_session_token')
+    @role_arn          ||= creds['role_arn'] if creds.include?('role_arn')
+    @external_id       ||= creds['external_id'] if creds.include?('external_id')
     @role_session_name ||= creds['role_session_name'] if creds.include?('role_session_name')
+
     return unless @role_arn
     @role_session_name ||= generate_session_name
-    @credentials ||= Aws::AssumeRoleCredentials.new(
+    @credentials ||= role_creds(
       client: Aws::STS::Client.new(
         region: @region,
         access_key_id: @access_key_id,
         secret_access_key: @secret_access_key
       ),
       role_arn: @role_arn,
-      role_session_name: @role_session_name
+      role_session_name: @role_session_name,
+      external_id: @external_id
     )
   end
 
@@ -93,9 +104,10 @@ module Awsecrets
                   AWSConfig['default']['region']
                 end
 
-    @role_arn ||= AWSConfig[@profile]['role_arn'] if AWSConfig[@profile]
+    @role_arn          ||= AWSConfig[@profile]['role_arn'] if AWSConfig[@profile]
     @role_session_name ||= AWSConfig[@profile]['role_session_name'] if AWSConfig[@profile]
-    @source_profile ||= AWSConfig[@profile]['source_profile'] if AWSConfig[@profile]
+    @external_id       ||= AWSConfig[@profile]['external_id'] if AWSConfig[@profile]
+    @source_profile    ||= AWSConfig[@profile]['source_profile'] if AWSConfig[@profile]
   end
 
   def self.set_aws_config
@@ -110,13 +122,14 @@ module Awsecrets
                  AWSConfig['default']['region']
                end
 
-      @credentials ||= Aws::AssumeRoleCredentials.new(
+      @credentials ||= role_creds(
         client: Aws::STS::Client.new(
           region: region,
           credentials: Aws::SharedCredentials.new(profile_name: @source_profile.name)
         ),
         role_arn: @role_arn,
-        role_session_name: @role_session_name
+        role_session_name: @role_session_name,
+        external_id: @external_id
       )
     end
 
@@ -136,5 +149,9 @@ module Awsecrets
     metadata_endpoint = 'http://169.254.169.254/latest/meta-data/'
     az = Net::HTTP.get(URI.parse(metadata_endpoint + 'placement/availability-zone'))
     az[0...-1]
+  end
+
+  def self.role_creds(args)
+    Aws::AssumeRoleCredentials.new(args)
   end
 end
