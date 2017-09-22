@@ -62,7 +62,7 @@ $ ec2sample i-1aa1aaaa
 
 ### Use AssumeRole
 
-Support `role_arn` `role_session_name` `source_profile`.
+Support `role_arn` `role_session_name` `source_profile` `external_id`.
 
 #### 1. .aws/config and .aws/credentials
 
@@ -72,6 +72,7 @@ see http://docs.aws.amazon.com/cli/latest/userguide/cli-roles.html
 # .aws/config
 [profile assumed]
 role_arn = arn:aws:iam::123456780912:role/assumed-role
+external_id = myfoo_id
 source_profile = assume_test
 ```
 

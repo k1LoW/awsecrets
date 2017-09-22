@@ -9,10 +9,13 @@ begin
 rescue LoadError
 end
 
+desc 'Default task: run spec'
+task default: 'spec'
+
+desc 'Run spec:all - spec:core and spec:rubocop'
 task spec: 'spec:all'
 namespace :spec do
-  task all: ['spec:core',
-             'spec:rubocop']
+  task all: ['spec:core', 'spec:rubocop']
   RSpec::Core::RakeTask.new(:core)
   RuboCop::RakeTask.new
 end

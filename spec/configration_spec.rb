@@ -133,19 +133,62 @@ describe Awsecrets do
     end
 
     context 'AssumeRole' do
-      it '--profile assumed' do
-        Awsecrets.load(profile: 'assumed')
-        expect(Aws.config[:region]).to eq('CONFIG_ASSUME_TEST_REGION')
-        expect(Aws.config[:credentials].credentials.access_key_id).to eq('STS_ASSUMED_ACCESS_KEY_ID')
-        expect(Aws.config[:credentials].credentials.secret_access_key).to eq('STS_ASSUMED_SECRET_ACCESS_KEY')
+      before :each do
+        allow(subject).to receive(:role_creds) do |args|
+          @caller_options = args
+          Aws::AssumeRoleCredentials.new(args)
+        end
       end
 
-      it 'load AWS_PROIFLE=assumed' do
-        stub_const('ENV', { 'AWS_PROFILE' => 'assumed' })
-        Awsecrets.load
-        expect(Aws.config[:region]).to eq('CONFIG_ASSUME_TEST_REGION')
-        expect(Aws.config[:credentials].credentials.access_key_id).to eq('STS_ASSUMED_ACCESS_KEY_ID')
-        expect(Aws.config[:credentials].credentials.secret_access_key).to eq('STS_ASSUMED_SECRET_ACCESS_KEY')
+      context 'when passing --profile assumed' do
+        before :each do
+          Awsecrets.load(profile: 'assumed')
+        end
+
+        it 'should create the proper config' do
+          expect(Aws.config[:region]).to eq('CONFIG_ASSUME_TEST_REGION')
+          expect(Aws.config[:credentials].credentials.access_key_id).to eq('STS_ASSUMED_ACCESS_KEY_ID')
+          expect(Aws.config[:credentials].credentials.secret_access_key).to eq('STS_ASSUMED_SECRET_ACCESS_KEY')
+        end
+
+        it 'should call Aws::AssumeRoleCredentials.new with the correct client' do
+          expect(@caller_options[:client]).to be_a_kind_of(Aws::STS::Client)
+        end
+        it 'should call Aws::AssumeRoleCredentials.new with the correct role_arn' do
+          expect(@caller_options[:role_arn]).to eq('CONFIG_ASSUMED_ROLE_ARN')
+        end
+        it 'should call Aws::AssumeRoleCredentials.new with the correct role_session_name' do
+          expect(@caller_options[:role_session_name]).to eq('CONFIG_ASSUMED_ROLE_SESSION_NAME')
+        end
+        it 'should call Aws::AssumeRoleCredentials.new with the correct external_id' do
+          expect(@caller_options[:external_id]).to eq('CONFIG_ASSUMED_ROLE_EXTERNAL_ID')
+        end
+      end
+
+      context 'load AWS_PROFILE=assumed' do
+        before :each do
+          stub_const('ENV', { 'AWS_PROFILE' => 'assumed' })
+          Awsecrets.load
+        end
+
+        it 'should create the proper config' do
+          expect(Aws.config[:region]).to eq('CONFIG_ASSUME_TEST_REGION')
+          expect(Aws.config[:credentials].credentials.access_key_id).to eq('STS_ASSUMED_ACCESS_KEY_ID')
+          expect(Aws.config[:credentials].credentials.secret_access_key).to eq('STS_ASSUMED_SECRET_ACCESS_KEY')
+        end
+
+        it 'should call Aws::AssumeRoleCredentials.new with the correct client' do
+          expect(@caller_options[:client]).to be_a_kind_of(Aws::STS::Client)
+        end
+        it 'should call Aws::AssumeRoleCredentials.new with the correct role_arn' do
+          expect(@caller_options[:role_arn]).to eq('CONFIG_ASSUMED_ROLE_ARN')
+        end
+        it 'should call Aws::AssumeRoleCredentials.new with the correct role_session_name' do
+          expect(@caller_options[:role_session_name]).to eq('CONFIG_ASSUMED_ROLE_SESSION_NAME')
+        end
+        it 'should call Aws::AssumeRoleCredentials.new with the correct external_id' do
+          expect(@caller_options[:external_id]).to eq('CONFIG_ASSUMED_ROLE_EXTERNAL_ID')
+        end
       end
 
       it 'load AWS_PROIFLE=assumed_no_session_name' do
