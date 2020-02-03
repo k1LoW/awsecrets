@@ -138,6 +138,16 @@ module Awsecrets
     @credentials ||= Aws::Credentials.new(@access_key_id, @secret_access_key, @session_token) if @access_key_id
     @credentials ||= Aws::InstanceProfileCredentials.new
 
+    if ENV.key?('DISABLE_AWS_CLIENT_CHECK') && !ENV['DISABLE_AWS_CLIENT_CHECK'].nil? && (ENV['DISABLE_AWS_CLIENT_CHECK'] == 'false')
+      begin
+        Aws::EC2::Client.new
+      rescue Aws::Errors::MissingRegionError
+        raise 'Missing region: use the region command line option or export region name to ENV[\'AWS_REGION\'] or use the awscli configuration'
+      rescue StandardError => e
+        raise "Oops, there is something wrong with AWS client configuration => #{e}"
+      end
+    end
+
     Aws.config[:credentials] = @credentials
   end
 
