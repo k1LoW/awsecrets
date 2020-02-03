@@ -147,8 +147,12 @@ module Awsecrets
 
   def self.current_region
     metadata_endpoint = 'http://169.254.169.254/latest/meta-data/'
-    az = Net::HTTP.get(URI.parse(metadata_endpoint + 'placement/availability-zone'))
-    az[0...-1]
+    begin
+      az = Net::HTTP.get(URI.parse(metadata_endpoint + 'placement/availability-zone'))
+      az[0...-1]
+    rescue Errno::EHOSTUNREACH => e
+      STDERR.puts "Attemped but failed to recover AWS configuration from EC2-like metadata: #{e}"
+    end
   end
 
   def self.role_creds(args)
