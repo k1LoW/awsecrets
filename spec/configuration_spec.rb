@@ -35,7 +35,7 @@ describe Awsecrets do
     expect(Awsecrets::VERSION).not_to be nil
   end
 
-  context 'Configration' do
+  context 'Configuration' do
     it 'load --profile option' do
       Awsecrets.load(profile: 'dev')
       expect(Aws.config[:region]).to eq('CONFIG_DEFAULT_REGION')

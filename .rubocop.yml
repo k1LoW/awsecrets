@@ -1,7 +1,9 @@
+---
+require: rubocop-performance
 AllCops:
-  TargetRubyVersion: 2.1
+  TargetRubyVersion: 2.3.4
 
-Lint/HandleExceptions:
+Lint/SuppressedException:
   Enabled: false
 
 Lint/UselessAssignment:
@@ -65,4 +67,28 @@ Style/SymbolProc:
   Enabled: false
 
 Style/BracesAroundHashParameters:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+Lint/MissingCopEnableDirective:
+  Enabled: false
+
+Style/ExpandPathArguments:
+  Enabled: false
+
+Naming/MemoizedInstanceVariableName:
+  Enabled: false
+
+Layout/EmptyLineAfterGuardClause:
+  Enabled: false
+
+Gemspec/OrderedDependencies:
+  Enabled: false
+
+Layout/SpaceAroundOperators:
+  Enabled: false
+
+Style/SafeNavigation:
   Enabled: false
