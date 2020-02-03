@@ -51,8 +51,9 @@ module Awsecrets
       opt.parse!(ARGV)
     rescue OptionParser::InvalidOption
     end
-    return unless @profile
+    return true unless @profile
     @region ||= AWSConfig[@profile]['region']
+    true
   end
 
   def self.load_env
@@ -60,20 +61,21 @@ module Awsecrets
     @region       ||= ENV['AWS_DEFAULT_REGION']
     @profile      ||= ENV['AWS_PROFILE']
     @secrets_path ||= ENV['AWS_SECRETS_PATH']
-    return if @access_key_id
+    return true if @access_key_id
     return unless ENV['AWS_ACCESS_KEY_ID'] && ENV['AWS_SECRET_ACCESS_KEY']
     @access_key_id     ||= ENV['AWS_ACCESS_KEY_ID']
     @secret_access_key ||= ENV['AWS_SECRET_ACCESS_KEY']
     @session_token     ||= ENV['AWS_SESSION_TOKEN']
+    true
   end
 
   def self.load_yaml
-    return if @disable_load_secrets
+    return false if @disable_load_secrets
     @secrets_path ||= 'secrets.yml'
     creds = YAML.load_file(@secrets_path) if File.exist?(File.expand_path(@secrets_path))
     @region ||= creds['region'] if creds && creds.include?('region')
-    return if @access_key_id
-    return unless creds &&
+    return true if @access_key_id
+    return true unless creds &&
                   creds.include?('aws_access_key_id') &&
                   creds.include?('aws_secret_access_key')
     @access_key_id     ||= creds['aws_access_key_id']
@@ -83,7 +85,7 @@ module Awsecrets
     @external_id       ||= creds['external_id'] if creds.include?('external_id')
     @role_session_name ||= creds['role_session_name'] if creds.include?('role_session_name')
 
-    return unless @role_arn
+    return true unless @role_arn
     @role_session_name ||= generate_session_name
     @credentials ||= role_creds(
       client: Aws::STS::Client.new(
@@ -95,6 +97,7 @@ module Awsecrets
       role_session_name: @role_session_name,
       external_id: @external_id
     )
+    true
   end
 
   def self.load_config

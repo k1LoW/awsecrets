@@ -36,7 +36,7 @@ describe Awsecrets do
 
     it '--profile option > secrets.yml (No .aws/config)' do
       Awsecrets.load(profile: 'dev', secrets_path: File.expand_path(File.join(fixtures_path, 'secrets.yml')))
-      expect(Aws.config[:region]).to eq('YAML_REGION') # !!!
+      expect(Aws.config[:region]).to eq('YAML-REGION') # !!!
       expect(Aws.config[:credentials].credentials.access_key_id).to eq('CREDS_DEV_ACCESS_KEY_ID')
       expect(Aws.config[:credentials].credentials.secret_access_key).to eq('CREDS_DEV_SECRET_ACCESS_KEY')
     end
