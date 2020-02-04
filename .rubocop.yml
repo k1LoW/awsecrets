@@ -75,9 +75,6 @@ Style/BracesAroundHashParameters:
 Style/FrozenStringLiteralComment:
   Enabled: false
 
-Lint/MissingCopEnableDirective:
-  Enabled: false
-
 Style/ExpandPathArguments:
   Enabled: false
 
