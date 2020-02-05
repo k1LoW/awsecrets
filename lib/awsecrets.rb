@@ -13,9 +13,7 @@ module Awsecrets
     @disable_load_secrets = disable_load_secrets
     @disable_load_secrets = true if secrets_path == false
 
-    @credentials       = nil
-    @access_key_id     = nil
-    @secret_access_key = nil
+    @secret_access_key = @credentials = @access_key_id = nil
     @session_token     = nil
     @role_arn          = nil
     @external_id       = nil
