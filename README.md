@@ -31,7 +31,9 @@ Or install it yourself as:
 
 ## Usage example
 
-Create command line tool `ec2sample` like following code
+### Basic example
+
+Create a command line tool `ec2sample` like following code:
 
 ```ruby
 #!/usr/bin/env ruby
@@ -41,17 +43,21 @@ ec2_client = Aws::EC2::Client.new
 puts ec2_client.describe_instances({ instance_ids: [ARGV.first] }).reservations.first.instances.first
 ```
 
-And execute
+Then execute it with command line parameters:
 
 ```sh
 $ ec2sample i-1aa1aaaa --profile mycreds --region ap-northeast-1
+```
 
-or
+or with environment variables configuration:
 
+```sh
 $ AWS_ACCESS_KEY_ID=XXXXXXXXXXXXXXXXXXXX AWS_SECRET_ACCESS_KEY=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX AWS_REGION=ap-northeast-1 ec2sample i-1aa1aaaa
+```
 
-or
+or using an YAML file:
 
+```sh
 $ cat <<EOF > secrets.yml
 region: ap-northeast-1
 aws_access_key_id: XXXXXXXXXXXXXXXXXXXX
@@ -64,7 +70,7 @@ $ ec2sample i-1aa1aaaa
 
 Support `role_arn` `role_session_name` `source_profile` `external_id`.
 
-#### 1. .aws/config and .aws/credentials
+#### 1. `.aws/config` and `.aws/credentials`
 
 see http://docs.aws.amazon.com/cli/latest/userguide/cli-roles.html
 
@@ -89,7 +95,7 @@ And execute
 $ ec2sample i-1aa1aaaa --profile assumed --region ap-northeast-1
 ```
 
-#### 2. secrets.yml
+#### 2. `secrets.yml`
 
 ```sh
 $ cat <<EOF > secrets.yml
@@ -105,7 +111,7 @@ And execute
 $ ec2sample i-1aa1aaaa
 ```
 
-### Disable load YAML(secrets.yml)
+### Disable load YAML (`secrets.yml`)
 
 ```ruby
 Awsecrets.load(disable_load_secrets:true)
@@ -119,8 +125,8 @@ Awsecrets.load(secrets_path:false)
 
 ## Contributing
 
-1. Fork it ( https://github.com/k1LoW/awsecrets/fork )
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create a new Pull Request
+1. [Fork it]( https://github.com/k1LoW/awsecrets/fork ) !
+2. Create your feature branch (`git checkout -b my-new-feature`).
+3. Commit your changes (`git commit -am 'Add some feature'`).
+4. Push to the branch (`git push origin my-new-feature`).
+5. Create a new Pull Request.
