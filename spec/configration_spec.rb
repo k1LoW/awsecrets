@@ -52,7 +52,7 @@ describe Awsecrets do
 
     it 'load secrets.yml' do
       Awsecrets.load(secrets_path: File.expand_path(File.join(fixtures_path, 'secrets.yml')))
-      expect(Aws.config[:region]).to eq('YAML_REGION')
+      expect(Aws.config[:region]).to eq('YAML-REGION')
       expect(Aws.config[:credentials].credentials.access_key_id).to eq('YAML_ACCESS_KEY_ID')
       expect(Aws.config[:credentials].credentials.secret_access_key).to eq('YAML_SECRET_ACCESS_KEY')
       expect(Aws.config[:credentials].credentials.session_token).to eq(nil)
@@ -69,7 +69,7 @@ describe Awsecrets do
 
     it 'load secrets_with_session_token.yml' do
       Awsecrets.load(secrets_path: File.expand_path(File.join(fixtures_path, 'secrets_with_session_token.yml')))
-      expect(Aws.config[:region]).to eq('YAML_REGION')
+      expect(Aws.config[:region]).to eq('YAML-REGION')
       expect(Aws.config[:credentials].credentials.access_key_id).to eq('YAML_ACCESS_KEY_ID')
       expect(Aws.config[:credentials].credentials.secret_access_key).to eq('YAML_SECRET_ACCESS_KEY')
       expect(Aws.config[:credentials].credentials.session_token).to eq('YAML_SESSION_TOKEN')
@@ -146,7 +146,7 @@ describe Awsecrets do
         end
 
         it 'should create the proper config' do
-          expect(Aws.config[:region]).to eq('CONFIG_ASSUME_TEST_REGION')
+          expect(Aws.config[:region]).to eq('CONFIG-ASSUME-TEST-REGION')
           expect(Aws.config[:credentials].credentials.access_key_id).to eq('STS_ASSUMED_ACCESS_KEY_ID')
           expect(Aws.config[:credentials].credentials.secret_access_key).to eq('STS_ASSUMED_SECRET_ACCESS_KEY')
         end
@@ -172,7 +172,7 @@ describe Awsecrets do
         end
 
         it 'should create the proper config' do
-          expect(Aws.config[:region]).to eq('CONFIG_ASSUME_TEST_REGION')
+          expect(Aws.config[:region]).to eq('CONFIG-ASSUME-TEST-REGION')
           expect(Aws.config[:credentials].credentials.access_key_id).to eq('STS_ASSUMED_ACCESS_KEY_ID')
           expect(Aws.config[:credentials].credentials.secret_access_key).to eq('STS_ASSUMED_SECRET_ACCESS_KEY')
         end
@@ -194,14 +194,14 @@ describe Awsecrets do
       it 'load AWS_PROIFLE=assumed_no_session_name' do
         stub_const('ENV', { 'AWS_PROFILE' => 'assumed_no_session_name' })
         Awsecrets.load
-        expect(Aws.config[:region]).to eq('CONFIG_ASSUME_TEST_REGION')
+        expect(Aws.config[:region]).to eq('CONFIG-ASSUME-TEST-REGION')
         expect(Aws.config[:credentials].credentials.access_key_id).to eq('STS_ASSUMED_ACCESS_KEY_ID')
         expect(Aws.config[:credentials].credentials.secret_access_key).to eq('STS_ASSUMED_SECRET_ACCESS_KEY')
       end
 
       it 'load secrets_with_role_arn.yml' do
         Awsecrets.load(secrets_path: File.expand_path(File.join(fixtures_path, 'secrets_with_role_arn.yml')))
-        expect(Aws.config[:region]).to eq('YAML_REGION')
+        expect(Aws.config[:region]).to eq('YAML-REGION')
         expect(Aws.config[:credentials].credentials.access_key_id).to eq('STS_ASSUMED_ACCESS_KEY_ID')
         expect(Aws.config[:credentials].credentials.secret_access_key).to eq('STS_ASSUMED_SECRET_ACCESS_KEY')
       end

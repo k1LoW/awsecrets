@@ -4,6 +4,9 @@ AllCops:
 Lint/HandleExceptions:
   Enabled: false
 
+Lint/MissingCopEnableDirective:
+  Enabled: false
+
 Lint/UselessAssignment:
   Enabled: false
 
@@ -11,10 +14,10 @@ Metrics/AbcSize:
   Max: 50
 
 Metrics/ClassLength:
-  Max: 125
+  Max: 130
 
 Metrics/ModuleLength:
-  Max: 125
+  Max: 130
 
 Metrics/CyclomaticComplexity:
   Max: 15
