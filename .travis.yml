@@ -1,3 +1,4 @@
+---
 language: ruby
 matrix:
   include:
@@ -16,7 +17,6 @@ matrix:
 before_install:
   - gem update --system ${RUBYGEMS_VERSION}
   - gem pristine bundler
-  
+
 script:
   - bundle exec rake spec
-

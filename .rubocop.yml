@@ -1,3 +1,4 @@
+---
 AllCops:
   TargetRubyVersion: 2.1
 
@@ -69,3 +70,4 @@ Style/SymbolProc:
 
 Style/BracesAroundHashParameters:
   Enabled: false
+
