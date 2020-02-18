@@ -141,6 +141,23 @@ module Awsecrets
     Aws.config[:credentials] = @credentials
   end
 
+<<<<<<< HEAD
+=======
+  def self.generate_session_name
+    "awsecrets-session-#{Time.now.to_i}"
+  end
+
+  def self.current_region
+    metadata_endpoint = 'http://169.254.169.254/latest/meta-data/'
+    begin
+      az = Net::HTTP.get(URI.parse(metadata_endpoint + 'placement/availability-zone'))
+      az[0...-1]
+    rescue Errno::EHOSTUNREACH => e
+      STDERR.puts "Attemped but failed to recover AWS configuration from EC2-like metadata: #{e}"
+    end
+  end
+
+>>>>>>> master
   def self.role_creds(args)
     Aws::AssumeRoleCredentials.new(args)
   end
