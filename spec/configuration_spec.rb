@@ -75,7 +75,7 @@ describe Awsecrets do
       expect(Aws.config[:credentials].credentials.session_token).to eq('YAML_SESSION_TOKEN')
     end
 
-    it 'load AWS_PROIFLE' do
+    it 'load AWS_PROFILE' do
       stub_const('ENV', { 'AWS_PROFILE' => 'dev' })
       Awsecrets.load
       expect(Aws.config[:region]).to eq('CONFIG_DEFAULT_REGION')
@@ -83,7 +83,7 @@ describe Awsecrets do
       expect(Aws.config[:credentials].credentials.secret_access_key).to eq('CREDS_DEV_SECRET_ACCESS_KEY')
     end
 
-    it 'load AWS_DEFAULT_PROIFLE' do
+    it 'load AWS_DEFAULT_PROFILE' do
       stub_const('ENV', { 'AWS_DEFAULT_PROFILE' => 'default' })
       Awsecrets.load
       expect(Aws.config[:region]).to eq('CONFIG_DEFAULT_REGION')
@@ -191,7 +191,7 @@ describe Awsecrets do
         end
       end
 
-      it 'load AWS_PROIFLE=assumed_no_session_name' do
+      it 'load AWS_PROFILE=assumed_no_session_name' do
         stub_const('ENV', { 'AWS_PROFILE' => 'assumed_no_session_name' })
         Awsecrets.load
         expect(Aws.config[:region]).to eq('CONFIG-ASSUME-TEST-REGION')

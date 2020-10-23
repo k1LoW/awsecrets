@@ -1,11 +1,13 @@
 require_relative 'awsecrets/version'
+require_relative 'awsecrets/utils'
 require 'optparse'
 require 'aws-sdk'
 require 'aws_config'
-require 'net/http'
 require 'yaml'
 
 module Awsecrets
+  include Misc
+
   def self.load(profile: nil, region: nil, secrets_path: nil, disable_load_secrets: false)
     @profile              = profile
     @region               = region
@@ -13,12 +15,8 @@ module Awsecrets
     @disable_load_secrets = disable_load_secrets
     @disable_load_secrets = true if secrets_path == false
 
-    @secret_access_key = @credentials = @access_key_id = nil
-    @session_token     = nil
-    @role_arn          = nil
-    @external_id       = nil
-    @source_profile    = nil
-    @role_session_name = nil
+    @credentials = @access_key_id = @secret_access_key = @session_token = nil
+    @role_arn = @external_id = @source_profile = @role_session_name = nil
 
     # 1. Command Line Options
     load_options if load_method_args
@@ -84,7 +82,7 @@ module Awsecrets
     @role_session_name ||= creds['role_session_name'] if creds.include?('role_session_name')
 
     return true unless @role_arn
-    @role_session_name ||= generate_session_name
+    @role_session_name ||= Misc.generate_session_name
     @credentials ||= role_creds(
       client: Aws::STS::Client.new(
         region: @region,
@@ -116,7 +114,7 @@ module Awsecrets
     Aws.config[:region] = @region
 
     if @role_arn && @source_profile
-      @role_session_name ||= generate_session_name
+      @role_session_name ||= Misc.generate_session_name
       region = if AWSConfig[@source_profile.name] && AWSConfig[@source_profile.name]['region']
                  AWSConfig[@source_profile.name]['region']
                else
@@ -139,21 +137,8 @@ module Awsecrets
     @credentials ||= Aws::Credentials.new(@access_key_id, @secret_access_key, @session_token) if @access_key_id
     @credentials ||= Aws::InstanceProfileCredentials.new
 
+    Misc.validate_client
     Aws.config[:credentials] = @credentials
-  end
-
-  def self.generate_session_name
-    "awsecrets-session-#{Time.now.to_i}"
-  end
-
-  def self.current_region
-    metadata_endpoint = 'http://169.254.169.254/latest/meta-data/'
-    begin
-      az = Net::HTTP.get(URI.parse(metadata_endpoint + 'placement/availability-zone'))
-      az[0...-1]
-    rescue Errno::EHOSTUNREACH => e
-      STDERR.puts "Attemped but failed to recover AWS configuration from EC2-like metadata: #{e}"
-    end
   end
 
   def self.role_creds(args)

@@ -31,6 +31,25 @@ Or install it yourself as:
 
 ## Usage example
 
+### Generate exception with wrong configuration
+
+For some use cases, awsecrets might raise an exception if (even after all
+attempts to configure access to an AWS account) there is missing configuration
+parameters.
+
+In other cases, this might not be desired.
+
+To have control on that, you can use the environment variable
+`DISABLE_AWS_CLIENT_CHECK`: if you set it to the string `'true'`, it will not
+attempt to early create an `Aws::EC2::Client` instance with the found
+parameters.
+
+By default, even if you don't set `DISABLE_AWS_CLIENT_CHECK` it will be treated
+like `true`.
+
+To enable this early checking, you **must** setup `DISABLE_AWS_CLIENT_CHECK`
+with the string `'false'`.
+
 ### Basic example
 
 Create a command line tool `ec2sample` like following code:
