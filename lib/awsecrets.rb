@@ -110,7 +110,7 @@ module Awsecrets
   end
 
   def self.set_aws_config
-    @region ||= self.current_region
+    @region ||= Misc.current_region
     Aws.config[:region] = @region
 
     if @role_arn && @source_profile
